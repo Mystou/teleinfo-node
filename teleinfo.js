@@ -1,13 +1,13 @@
 var events = require('events');
 var util = require('util');
 
-function teleinfo(port) {
+function teleinfo(fport) {
         // Evénements 'trame' et 'tramedecodee'
         var trameEvents = new events.EventEmitter();
 
         const SerialPort = require('serialport');
         const Readline = SerialPort.parsers.Readline;
-        const port = new SerialPort(port, {
+        const port = new SerialPort(fport, {
                   baudrate: 1200,
                   dataBits: 7,
                   parity: 'even',
