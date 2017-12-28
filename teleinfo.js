@@ -1,4 +1,3 @@
-var serialport = require('serialport');
 var events = require('events');
 var util = require('util');
 
@@ -6,20 +5,21 @@ function teleinfo(port) {
         // Evénements 'trame' et 'tramedecodee'
         var trameEvents = new events.EventEmitter();
 
-        var serialPort = new serialport.SerialPort(port, {
+        const SerialPort = require('serialport');
+        const Readline = SerialPort.parsers.Readline;
+        const port = new SerialPort(port, {
                   baudrate: 1200,
                   dataBits: 7,
                   parity: 'even',
                   stopBits: 1,
-                  // Caractères séparateurs = fin de trame + début de trame
-                  parser: serialport.parsers.readline(String.fromCharCode(13,3,2,10))
                 });
+        const parser = port.pipe(new Readline({ delimiter: String.fromCharCode(13,3,2,10) }));
 
-        serialPort.on('data', function(data) {
+        parser.on('data', function(data) {
                 trameEvents.emit('trame', data);
         });
 
-        serialPort.on('error', function(err) {
+        parser.on('error', function(err) {
                 trameEvents.emit('error', err);
         });
 
