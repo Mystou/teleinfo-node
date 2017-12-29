@@ -1,25 +1,26 @@
 var events = require('events');
 var util = require('util');
+var serialport = require('serialport');
 
 function teleinfo(fport) {
         // Evénements 'trame' et 'tramedecodee'
         var trameEvents = new events.EventEmitter();
 
-        const SerialPort = require('serialport');
-        const Readline = SerialPort.parsers.Readline;
-        const port = new SerialPort(fport, {
+        var serialport = require('serialport');
+        var serialPort = new serialport(fport, {
                   baudrate: 1200,
                   dataBits: 7,
                   parity: 'even',
                   stopBits: 1,
+                  // Caractères séparateurs = fin de trame + début de trame
+                  parser: serialport.parsers.readline(String.fromCharCode(13,3,2,10))
                 });
-        const parser = port.pipe(new Readline({ delimiter: String.fromCharCode(13,3,2,10) }));
 
-        parser.on('data', function(data) {
+        serialPort.on('data', function(data) {
                 trameEvents.emit('trame', data);
         });
 
-        parser.on('error', function(err) {
+        serialPort.on('error', function(err) {
                 trameEvents.emit('error', err);
         });
 
@@ -38,7 +39,6 @@ function teleinfo(fport) {
                   var err = new Error('Trame incomplete');
                   trameEvents.emit('error', err);
                 }
-
         });
 
         return trameEvents;
