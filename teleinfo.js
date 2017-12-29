@@ -6,7 +6,6 @@ function teleinfo(fport) {
         // Evénements 'trame' et 'tramedecodee'
         var trameEvents = new events.EventEmitter();
 
-        var serialport = require('serialport');
         var serialPort = new serialport(fport, {
                   baudrate: 1200,
                   dataBits: 7,
